@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -24,9 +24,9 @@ export class AuthService {
   async registrationUser(createUserDto: CreateUserDto): Promise<AuthResponse> {
     const user = await this.userModel.create(createUserDto);
 
-    const userWithTokenPair = await this.sessionService.createSession(user)
+    const userWithTokenPair = await this.sessionService.createSession(user);
 
-    return userWithTokenPair
+    return userWithTokenPair;
 
     // const tokenPayload = {
     //   id: user._id,
@@ -55,5 +55,21 @@ export class AuthService {
     //     refreshToken,
     //   },
     // };
+  }
+
+  async loginUser(createUserDto: CreateUserDto): Promise<AuthResponse> {
+    const user = await this.userModel.findOne({ email: createUserDto.email });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid data for user');
+    }
+
+    if (user.password !== createUserDto.password) {
+      throw new UnauthorizedException('Invalid data for user');
+    }
+
+    const userWithTokenPair = await this.sessionService.createSession(user);
+
+    return userWithTokenPair;
   }
 }
