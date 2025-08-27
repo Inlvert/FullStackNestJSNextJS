@@ -10,44 +10,50 @@ import {
   refreshTokenDocument,
 } from './model/refreshToken.schema';
 import { AuthResponse } from './dto/auth-response.dto';
+import { SessionService } from 'src/services/session.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(RefreshToken.name) private refreshTokenModel: Model<refreshTokenDocument>,
-    private jwtService: JwtService,
+    // @InjectModel(RefreshToken.name) private refreshTokenModel: Model<refreshTokenDocument>,
+    // private jwtService: JwtService,
+    private readonly sessionService: SessionService,
   ) {}
 
   async registrationUser(createUserDto: CreateUserDto): Promise<AuthResponse> {
     const user = await this.userModel.create(createUserDto);
 
-    const tokenPayload = {
-      id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    };
+    const userWithTokenPair = await this.sessionService.createSession(user)
 
-    const accessToken = await this.jwtService.signAsync(tokenPayload, {
-      secret: 'rftgyhujiok',
-      expiresIn: '5min',
-    });
-    const refreshToken = await this.jwtService.signAsync(tokenPayload, {
-      secret: 'fghiuHIYGUI',
-      expiresIn: '7d',
-    });
+    return userWithTokenPair
 
-    await this.refreshTokenModel.create({
-      token: refreshToken,
-      userId: user._id,
-    });
+    // const tokenPayload = {
+    //   id: user._id,
+    //   firstName: user.firstName,
+    //   lastName: user.lastName,
+    // };
 
-    return {
-      user,
-      tokenPair: {
-        accessToken,
-        refreshToken,
-      },
-    };
+    // const accessToken = await this.jwtService.signAsync(tokenPayload, {
+    //   secret: 'rftgyhujiok',
+    //   expiresIn: '5min',
+    // });
+    // const refreshToken = await this.jwtService.signAsync(tokenPayload, {
+    //   secret: 'fghiuHIYGUI',
+    //   expiresIn: '7d',
+    // });
+
+    // await this.refreshTokenModel.create({
+    //   token: refreshToken,
+    //   userId: user._id,
+    // });
+
+    // return {
+    //   user,
+    //   tokenPair: {
+    //     accessToken,
+    //     refreshToken,
+    //   },
+    // };
   }
 }
