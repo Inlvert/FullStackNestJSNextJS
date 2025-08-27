@@ -11,7 +11,7 @@ import { Model } from 'mongoose';
 @Injectable()
 export class SessionService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    // @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<refreshTokenDocument>,
     private readonly jwtTokenService: JwtTokenService,
