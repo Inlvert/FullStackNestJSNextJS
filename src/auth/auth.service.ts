@@ -72,4 +72,11 @@ export class AuthService {
 
     return userWithTokenPair;
   }
+
+  async refreshUser(refreshToken: string): Promise<AuthResponse>  {
+
+    const userWithTokenPair = await this.sessionService.refreshSession(refreshToken)
+
+    return userWithTokenPair
+  }
 }
