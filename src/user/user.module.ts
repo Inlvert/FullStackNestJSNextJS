@@ -5,10 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtTokenService } from 'src/services/jwt-token.service';
-import { JwtTokenGuard } from 'src/guards/jwt-token.guard';
+import { JwtAccessTokenGuard } from 'src/guards/jwt-Accesstoken.guard';
 
 @Module({
-  providers: [UserService, JwtTokenService, JwtTokenGuard],
+  providers: [UserService, JwtTokenService, JwtAccessTokenGuard],
   controllers: [UserController],
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
