@@ -7,6 +7,7 @@ import { User, UserSchema } from 'src/user/schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { SessionService } from 'src/services/session.service';
 import { JwtTokenService } from 'src/services/jwt-token.service';
+import { JwtRefreshTokenGuard } from 'src/guards/jwt-Refreshtoken.guard';
 
 @Module({
   imports: [
@@ -17,6 +18,11 @@ import { JwtTokenService } from 'src/services/jwt-token.service';
     JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [AuthService, SessionService, JwtTokenService],
+  providers: [
+    AuthService,
+    SessionService,
+    JwtTokenService,
+    JwtRefreshTokenGuard,
+  ],
 })
 export class AuthModule {}
