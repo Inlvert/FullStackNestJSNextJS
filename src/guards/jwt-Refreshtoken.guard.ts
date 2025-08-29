@@ -54,7 +54,7 @@ export class JwtRefreshTokenGuard implements CanActivate {
 
       return true;
     } catch (err) {
-      console.error('JWT verify error:', err.message);
+      // console.error('JWT verify error:', err.message);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
