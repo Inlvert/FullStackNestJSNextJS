@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+
+import { login } from "@/redux/slices/authSlices";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as yup from "yup";
+import { useAppDispatch } from "@/redux/hooks";
 
 const LOGIN_SCHEMA = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -11,11 +14,19 @@ const LOGIN_SCHEMA = yup.object({
 
 const initialValues = {
   email: "test@mail.com",
-  password: "12345test ",
+  password: "12345test",
 };
 
+interface LoginDto {
+  email: string;
+  password: string;
+}
+
 function LoginForm() {
-  const handleSubmit = (values, { resetForm }) => {
+  const dispatch = useAppDispatch();
+
+  const handleSubmit = (values: LoginDto, { resetForm }: FormikHelpers<LoginDto>) => {
+    dispatch(login(values));
     console.log("Form submitted:", values);
     resetForm();
   };
