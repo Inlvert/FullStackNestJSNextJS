@@ -12,6 +12,11 @@ export interface LoginDto {
   password: string;
 }
 
+export interface RefreshDto {
+  refreshToken: string;
+}
+
+
 let accessToken: string | null = null;
 
 httpClient.interceptors.request.use(
@@ -41,7 +46,7 @@ httpClient.interceptors.response.use(
       const { tokenPair } = response?.data;
       accessToken = tokenPair.accessToken;
 
-      localStorage.setItem("refreshToken", tokenPair.refreshToken);
+      localStorage.setItem(CONSTANTS.REFRESH_TOKEN, tokenPair.refreshToken);
     }
     return response;
   },
@@ -50,7 +55,7 @@ httpClient.interceptors.response.use(
       response: { status },
     } = error;
 
-    const refreshTokenFromLS = localStorage.getItem("refreshToken");
+    const refreshTokenFromLS = localStorage.getItem(CONSTANTS.REFRESH_TOKEN);
 
     if (refreshTokenFromLS && status === 419) {
       const {
@@ -61,7 +66,7 @@ httpClient.interceptors.response.use(
 
       accessToken = tokenPair.accessToken;
 
-      localStorage.setItem("refreshToken", tokenPair.refreshToken);
+      localStorage.setItem(CONSTANTS.REFRESH_TOKEN, tokenPair.refreshToken);
 
       error.config.headers["Authorization"] = `Bearer ${accessToken}`;
 
@@ -74,3 +79,6 @@ httpClient.interceptors.response.use(
 
 export const login = (userData: LoginDto) =>
   httpClient.post("/auth/login", userData);
+
+
+export const refresh = (refreshToken: string) => httpClient.post('/auth/refresh', {refreshToken})
