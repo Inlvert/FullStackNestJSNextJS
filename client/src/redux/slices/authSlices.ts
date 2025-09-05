@@ -10,6 +10,8 @@ interface User {
   id: string;
   email: string;
   token: string;
+  firstName: string;
+  lastName: string;
 }
 
 interface AuthState {
@@ -30,8 +32,23 @@ const login = createAsyncThunk<User, LoginDto, { rejectValue: string[] }>(
   `${SLICE_NAME}/login`,
   async (userData, thunkAPI) => {
     try {
-      const { data: user } = await API.login(userData);
-      return user;
+      const {data} = await API.login(userData);
+      console.log(data.user.tokenPair)
+      return data.user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.errors || [error.message]
+      );
+    }
+  }
+);
+
+const refresh = createAsyncThunk<User, string, { rejectValue: string[] }>(
+  `${SLICE_NAME}/refresh`,
+  async (refreshToken, thunkAPI) => {
+    try {
+      const {data} = await API.refresh(refreshToken);
+      return data.user;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.errors || [error.message]
@@ -56,11 +73,23 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload || ["Unknown error"];
     });
+
+    builder.addCase(refresh.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(refresh.fulfilled, (state, action) => {
+      state.isLoading = true;
+      state.user = action.payload;
+    });
+    builder.addCase(refresh.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || ["Unknown error"];
+    });
   },
 });
 
 const { reducer: authReducer, actions } = authSlice;
 
-export { login };
+export { login, refresh };
 
 export default authReducer;
