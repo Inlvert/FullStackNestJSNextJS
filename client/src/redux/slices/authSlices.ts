@@ -32,8 +32,8 @@ const login = createAsyncThunk<User, LoginDto, { rejectValue: string[] }>(
   `${SLICE_NAME}/login`,
   async (userData, thunkAPI) => {
     try {
-      const {data} = await API.login(userData);
-      console.log(data.user.tokenPair)
+      const { data } = await API.login(userData);
+      console.log(data.user.tokenPair);
       return data.user;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
@@ -47,7 +47,7 @@ const refresh = createAsyncThunk<User, string, { rejectValue: string[] }>(
   `${SLICE_NAME}/refresh`,
   async (refreshToken, thunkAPI) => {
     try {
-      const {data} = await API.refresh(refreshToken);
+      const { data } = await API.refresh(refreshToken);
       return data.user;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
@@ -60,7 +60,11 @@ const refresh = createAsyncThunk<User, string, { rejectValue: string[] }>(
 const authSlice = createSlice({
   name: SLICE_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      return initialState;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {
       state.isLoading = true;
@@ -89,6 +93,8 @@ const authSlice = createSlice({
 });
 
 const { reducer: authReducer, actions } = authSlice;
+
+export const { logout } = actions;
 
 export { login, refresh };
 
