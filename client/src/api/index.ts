@@ -16,8 +16,12 @@ export interface RefreshDto {
   refreshToken: string;
 }
 
-
 let accessToken: string | null = null;
+
+export const clearTokens = () => {
+  accessToken = null;
+  localStorage.removeItem(CONSTANTS.REFRESH_TOKEN);
+};
 
 httpClient.interceptors.request.use(
   function (config) {
@@ -80,5 +84,5 @@ httpClient.interceptors.response.use(
 export const login = (userData: LoginDto) =>
   httpClient.post("/auth/login", userData);
 
-
-export const refresh = (refreshToken: string) => httpClient.post('/auth/refresh', {refreshToken})
+export const refresh = (refreshToken: string) =>
+  httpClient.post("/auth/refresh", { refreshToken });
