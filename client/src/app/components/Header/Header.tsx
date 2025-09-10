@@ -27,6 +27,7 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/login", label: "Login" },
     { href: "/registration", label: "Registration" },
+    { href: "/chat", label: "Chat" },
   ];
 
   return (
