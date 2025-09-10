@@ -6,8 +6,9 @@ interface EnvVars {
   CONNECT_TO_DB: string;
 }
 
-const { CONNECT_TO_DB } = process.env;
+const { CONNECT_TO_DB, CLIENT_URL } = process.env;
 
 export const CONSTANTS = {
   CONNECT_TO_DB,
+  CLIENT_URL
 };
