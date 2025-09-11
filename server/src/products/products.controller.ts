@@ -9,12 +9,16 @@ import {
   Param,
   Post,
   Put,
+  UploadedFiles,
+  UseInterceptors,
   // Redirect,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 import { Product } from './schemas/product.schema';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { multerConfig } from 'src/utils/multer.config';
 
 @Controller('products')
 export class ProductsController {
@@ -45,10 +49,17 @@ export class ProductsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Header('controll', 'text')
-  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
+  @UseInterceptors(FilesInterceptor('imageUrl', 5, multerConfig))
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<Product> {
     // return `Title: ${createProductDto.title}, price: ${createProductDto.price}`;
+    console.log('Uploaded files:', files);
+    
+    // const images = files.map((file) => `/images/${file.filename}`);
 
-    return this.productService.create(createProductDto);
+    return this.productService.create(createProductDto, files);
   }
 
   @Delete(':id')
@@ -57,7 +68,10 @@ export class ProductsController {
   }
 
   @Put(':id')
-  update(@Body() updateProductDto: UpdateProductDto, @Param('id') id: string): Promise<Product | null> {
+  update(
+    @Body() updateProductDto: UpdateProductDto,
+    @Param('id') id: string,
+  ): Promise<Product | null> {
     return this.productService.update(id, updateProductDto);
   }
 }

@@ -21,8 +21,29 @@ export class ProductsService {
     return this.productModel.findById(_id); //.exec(); // .exec() повертає справжній Promise
   }
 
-  async create(productDto: CreateProductDto): Promise<Product> {
-    const newProduct = new this.productModel(productDto);
+  // async create(
+  //   productDto: CreateProductDto,
+  //   files: Express.Multer.File[],
+  // ): Promise<Product> {
+  //   const newProduct = new this.productModel({
+  //     ...productDto,
+  //     images: files.map((file) => file.filename),
+  //   });
+
+  //   return newProduct.save();
+  // }
+
+  async create(
+    createProductDto: CreateProductDto,
+    files: Express.Multer.File[],
+  ): Promise<Product> {
+    
+    const imageUrls = files.map((file) => file.filename);
+
+    const newProduct = new this.productModel({
+      ...createProductDto,
+      imageUrl: imageUrls,
+    });
 
     return newProduct.save();
   }
