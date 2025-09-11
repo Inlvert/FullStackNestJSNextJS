@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { Model } from 'mongoose';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { PaginatedProductsDto } from './dto/pagination-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -13,8 +14,24 @@ export class ProductsService {
 
   private products: CreateProductDto[] = [];
 
-  async getAll(): Promise<Product[]> {
-    return this.productModel.find().exec();
+  // async getAll(): Promise<Product[]> {
+  //   return this.productModel.find().exec();
+  // }
+
+  async getAll(page: number = 1, limit: number = 10): Promise<PaginatedProductsDto> {
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      this.productModel.find().skip(skip).limit(limit).exec(),
+      this.productModel.countDocuments().exec(),
+    ]);
+
+    return {
+      items,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async getById(_id: string) {

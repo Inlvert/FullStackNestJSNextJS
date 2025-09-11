@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
   // Redirect,
@@ -19,6 +20,7 @@ import { ProductsService } from './products.service';
 import { Product } from './schemas/product.schema';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/utils/multer.config';
+import { PaginatedProductsDto } from './dto/pagination-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -26,9 +28,14 @@ export class ProductsController {
 
   @Get()
   // @Redirect('https://google.com', 301)
-  getAll(): Promise<Product[]> {
+  getAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<PaginatedProductsDto> {
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 10;
     console.log('getAll');
-    return this.productService.getAll();
+    return this.productService.getAll(pageNum, limitNum);
   }
 
   //  @Get(':id')
