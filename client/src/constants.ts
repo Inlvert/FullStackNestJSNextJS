@@ -1,5 +1,5 @@
 const CONSTANTS = {
-  baseURL: "https://full-stack-nest-js-next-ii53fwsvy-inlverts-projects.vercel.app/auth/login",
+  baseURL: "https://full-stack-nest-js-next-qwxn0bls4-inlverts-projects.vercel.app",
   REFRESH_TOKEN: "refreshToken"
 };
 
