@@ -20,6 +20,15 @@ interface AuthState {
   error: string[] | null;
 }
 
+interface APIError {
+  response?: {
+    data?: {
+      errors?: string[];
+    };
+  };
+  message: string;
+}
+
 const SLICE_NAME = "auth";
 
 const initialState: AuthState = {
@@ -28,14 +37,15 @@ const initialState: AuthState = {
   error: null,
 };
 
-const login = createAsyncThunk<User, LoginDto, { rejectValue: string[] }>(
+const loginUser = createAsyncThunk<User, LoginDto, { rejectValue: string[] }>(
   `${SLICE_NAME}/login`,
-  async (userData, thunkAPI) => {
+  async (userData: LoginDto, thunkAPI) => {
     try {
       const { data } = await API.login(userData);
       console.log(data.user.tokenPair);
       return data.user;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as APIError;
       return thunkAPI.rejectWithValue(
         error.response?.data?.errors || [error.message]
       );
@@ -49,7 +59,8 @@ const refresh = createAsyncThunk<User, string, { rejectValue: string[] }>(
     try {
       const { data } = await API.refresh(refreshToken);
       return data.user;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as APIError;
       return thunkAPI.rejectWithValue(
         error.response?.data?.errors || [error.message]
       );
@@ -66,14 +77,14 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(login.pending, (state) => {
+    builder.addCase(loginUser.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(login.fulfilled, (state, action) => {
-      state.isLoading = true;
+    builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.isLoading = false;
       state.user = action.payload;
     });
-    builder.addCase(login.rejected, (state, action) => {
+    builder.addCase(loginUser.rejected, (state, action) => {
       state.isLoading = false;
       state.error = action.payload || ["Unknown error"];
     });
@@ -82,7 +93,7 @@ const authSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(refresh.fulfilled, (state, action) => {
-      state.isLoading = true;
+      state.isLoading = false;
       state.user = action.payload;
     });
     builder.addCase(refresh.rejected, (state, action) => {
@@ -96,6 +107,6 @@ const { reducer: authReducer, actions } = authSlice;
 
 export const { logout } = actions;
 
-export { login, refresh };
+export { loginUser, refresh };
 
 export default authReducer;

@@ -2,7 +2,7 @@ import React from 'react'
 
 function Registration() {
   return (
-    <div>
+    <div className='h-screen'>
       <h1>Registration page</h1>
     </div>
   )

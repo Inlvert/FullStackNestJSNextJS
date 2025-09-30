@@ -1,71 +1,60 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Link as HeroLink,
-} from "@heroui/react";
-
-const AcmeLogo = () => (
-  <svg fill="none" height="36" viewBox="0 0 32 32" width="36">
-    <path
-      clipRule="evenodd"
-      d="M17.6482 10.1305L15.8785 7.02583L7.02979 22.5499H10.5278L17.6482 10.1305ZM19.8798 14.0457L18.11 17.1983L19.394 19.4511H16.8453L15.1056 22.5499H24.7272L19.8798 14.0457Z"
-      fill="currentColor"
-      fillRule="evenodd"
-    />
-  </svg>
-);
+import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Header() {
-  const pathName = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/login", label: "Login" },
-    { href: "/registration", label: "Registration" },
-    { href: "/chat", label: "Chat" },
-  ];
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <Navbar>
-      <NavbarBrand>
-        <HeroLink
-          href="/"
-          color={pathName === "/" ? "primary" : "foreground"}
-          className="flex items-center gap-2"
-        >
-          <AcmeLogo />
-          <p className="font-bold text-inherit text-cyan-400">AUTH</p>
-        </HeroLink>
-      </NavbarBrand>
-
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        {navItems.map((item) => (
-          <NavbarItem key={item.href}>
-            <HeroLink
-              href={item.href}
-              color={pathName === item.href ? "primary" : "foreground"}
-            >
-              {item.label}
-            </HeroLink>
-          </NavbarItem>
-        ))}
-      </NavbarContent>
-
-      <NavbarContent justify="end">
-        <NavbarItem>
-          <HeroLink
-            href="/registration"
-            color={pathName === "/registration" ? "primary" : "foreground"}
+    <header className="bg-yellow-200 shadow-md w-full z-50 text-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+        <div className="text-2xl font-bold text-blue-600">
+          <Link href="/">LOGO</Link>
+        </div>
+       
+        <nav className="hidden md:flex space-x-6">
+          <Link href="/" className="hover:text-blue-600 transition">Home</Link>
+          <Link href="/login" className="hover:text-blue-600 transition">Login</Link>
+          <Link href="/registration" className="hover:text-blue-600 transition">Registration</Link>
+          <Link href="/chat" className="block hover:text-blue-600 transition">Chat</Link>
+        </nav>
+      
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={toggleMenu}
+            className="flex flex-col justify-between w-6 h-6 focus:outline-none"
           >
-            Sign Up
-          </HeroLink>
-        </NavbarItem>
-      </NavbarContent>
-    </Navbar>
+            <span
+              className={`block h-0.5 w-full bg-black transform transition duration-300 ${
+                isOpen ? "rotate-45 translate-y-3" : ""
+              }`}
+            ></span>
+            <span
+              className={`block h-0.5 w-full bg-black transition duration-300 ${
+                isOpen ? "opacity-0" : ""
+              }`}
+            ></span>
+            <span
+              className={`block h-0.5 w-full bg-black transform transition duration-300 ${
+                isOpen ? "-rotate-45 -translate-y-2.5" : ""
+              }`}
+            ></span>
+          </button>
+        </div>
+      </div>
+     
+      {isOpen && (
+        <nav className="md:hidden bg-yellow-200 shadow-md px-4 pt-4 pb-6 space-y-2">
+          <Link href="/" className="block hover:text-blue-600 transition">Home</Link>
+          <Link href="/login" className="block hover:text-blue-600 transition">Login</Link>
+          <Link href="/registration" className="block hover:text-blue-600 transition">Registration</Link>
+          <Link href="/chat" className="block hover:text-blue-600 transition">Chat</Link>
+          
+        </nav>
+      )}
+    </header>
   );
 }

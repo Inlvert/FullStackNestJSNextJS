@@ -39,7 +39,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 h-screen d">
       <input
         placeholder="Назва кімнати"
         value={room}

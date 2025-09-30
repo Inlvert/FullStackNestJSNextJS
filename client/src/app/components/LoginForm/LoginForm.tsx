@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { login } from "@/redux/slices/authSlices";
+import { loginUser } from "@/redux/slices/authSlices";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as yup from "yup";
 import { useAppDispatch } from "@/redux/hooks";
@@ -26,7 +26,7 @@ function LoginForm() {
   const dispatch = useAppDispatch();
 
   const handleSubmit = (values: LoginDto, { resetForm }: FormikHelpers<LoginDto>) => {
-    dispatch(login(values));
+    dispatch(loginUser(values));
     console.log("Form submitted:", values);
     resetForm();
   };
