@@ -1,26 +1,34 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { join } from 'path';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
-async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors({
-    origin: (origin, callback) => {
-      if (
-        !origin ||
-        origin.endsWith('.vercel.app') ||
-        origin === 'http://localhost:3000'
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  });
+let cachedServer: any = null;
 
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  await app.listen(process.env.PORT ?? 3000);
+async function bootstrapServer() {
+  if (!cachedServer) {
+    const server = express();
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+
+    app.enableCors({
+      origin: (origin, callback) => {
+        if (!origin || origin.endsWith('.vercel.app') || origin === 'http://localhost:3000') {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    });
+
+    await app.init();
+    cachedServer = server;
+  }
+  return cachedServer;
 }
-bootstrap();
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const server = await bootstrapServer();
+  server(req, res);
+}
