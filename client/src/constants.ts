@@ -1,5 +1,5 @@
 const CONSTANTS = {
-  baseURL: "http://localhost:5000",
+  baseURL: "https://full-stack-nest-js-next-js.vercel.app/",
   REFRESH_TOKEN: "refreshToken"
 };
 
