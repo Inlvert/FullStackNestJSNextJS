@@ -5,7 +5,19 @@ const app_module_1 = require("./app.module");
 const path_1 = require("path");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors();
+    app.enableCors({
+        origin: (origin, callback) => {
+            if (!origin ||
+                origin.endsWith('.vercel.app') ||
+                origin === 'http://localhost:3000') {
+                callback(null, true);
+            }
+            else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+    });
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
     await app.listen(process.env.PORT ?? 3000);
 }
