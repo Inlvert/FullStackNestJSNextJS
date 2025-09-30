@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
+import express, { Request, Response } from 'express';
 
-let cachedServer: any;
+let cachedServer: express.Express | null = null;
 
 async function bootstrapServer() {
   if (!cachedServer) {
@@ -11,7 +11,13 @@ async function bootstrapServer() {
     const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
     app.enableCors({
-      origin: '*',
+      origin: (origin, callback) => {
+        if (!origin || origin.endsWith('.vercel.app') || origin === 'http://localhost:3000') {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
     });
 
@@ -21,7 +27,7 @@ async function bootstrapServer() {
   return cachedServer;
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: Request, res: Response) {
   const server = await bootstrapServer();
-  return server(req, res);
+  server(req, res);
 }
