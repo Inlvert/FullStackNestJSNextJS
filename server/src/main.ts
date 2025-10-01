@@ -1,28 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-import { VercelRequest, VercelResponse } from '@vercel/node';
 
-let cachedServer: any;
-
-async function bootstrapServer() {
-  if (!cachedServer) {
-    const server = express();
-    const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
-
-    app.enableCors({
-      origin: '*', // або вкажи конкретні домени
-      credentials: true,
-    });
-
-    await app.init();
-    cachedServer = server;
-  }
-  return cachedServer;
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: 'https://personal-recipe-discovery-platform-two.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+  await app.listen(process.env.PORT ?? 5000);
 }
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const server = await bootstrapServer();
-  server(req, res);
-}
+bootstrap();
