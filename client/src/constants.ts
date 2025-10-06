@@ -1,5 +1,5 @@
 const CONSTANTS = {
-  baseURL: "http://localhost",
+  baseURL: "https://fullstacknestjsnextjs.onrender.com",
   REFRESH_TOKEN: "refreshToken"
 };
 
